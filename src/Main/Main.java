@@ -1,9 +1,11 @@
 package Main;
 
 import CommandTable.CommandTable;
+import FileTree.FileTree;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.util.Scanner;
 
@@ -25,6 +27,9 @@ public class Main {
     
     public static void main(String[] args) throws IOException{
         
+        
+        
+        
         //File cwd = new File(System.getProperty("user.dir"));
         CommandTable commandLine = new CommandTable();
         
@@ -40,19 +45,6 @@ public class Main {
             System.out.println(commandLine.execute(command));           
         }
         
-        
-        
-        
-        //File cwd = new File(System.getProperty("user.dir"));
-        /*
-        File parent = cwd.getParentFile();
-        for(String entry : cwd.list())
-            System.out.print(entry + " ");
-        System.out.println();
-        for (String entry : parent.list())
-            System.out.print(entry + " ");
-        System.out.println();
-        */
     }
     
     
