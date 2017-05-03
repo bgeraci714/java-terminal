@@ -1,7 +1,7 @@
 package Main;
 
 import CommandTable.CommandTable;
-import FileTree.FileTree;
+import FileTree.Tree;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;

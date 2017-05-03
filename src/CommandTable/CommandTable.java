@@ -1,6 +1,7 @@
 package CommandTable;
 
 import FileTree.FileTree;
+import FileTree.Tree;
 import Queue.LinkedQueue;
 import java.awt.Desktop;
 import java.io.File;
@@ -60,7 +61,7 @@ public class CommandTable {
     protected String tree(){
         String cwdString = cwd.getAbsolutePath();
         String rootDir = cwd.getName();
-        FileTree<String> ftree = new FileTree<>();
+        FileTree ftree = new FileTree();
         
         
         LinkedQueue<File> fileQueue = new LinkedQueue<>();
@@ -71,7 +72,7 @@ public class CommandTable {
         while(!fileQueue.isEmpty()){
             currFile = fileQueue.dequeue();
             if (currFile != null && !currFile.getName().startsWith(".")){
-                ftree.add(currFile.getParentFile().getName(), currFile.getName());
+                ftree.add(currFile.getParentFile(), currFile);
                 if (currFile.isDirectory())
                     for (File childFile : currFile.listFiles())
                         fileQueue.enqueue(childFile);
