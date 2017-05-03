@@ -59,25 +59,21 @@ public class CommandTable {
     }
     
     protected String tree(){
-        String cwdString = cwd.getAbsolutePath();
-        String rootDir = cwd.getName();
         FileTree ftree = new FileTree();
-        
         
         LinkedQueue<File> fileQueue = new LinkedQueue<>();
         File currFile;
         fileQueue.enqueue(cwd);
         
-        System.out.println(ftree.toString());
         while(!fileQueue.isEmpty()){
             currFile = fileQueue.dequeue();
             if (currFile != null && !currFile.getName().startsWith(".")){
                 ftree.add(currFile.getParentFile(), currFile);
-                if (currFile.isDirectory())
+                
+                if (currFile.isDirectory()){
                     for (File childFile : currFile.listFiles())
                         fileQueue.enqueue(childFile);
-                
-                
+                }
             }
         }
         return ftree.toString();
