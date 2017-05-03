@@ -13,9 +13,8 @@ public class Tree<T> {
         root = null;
     }
     
-    
-    // doesn't work with same named parents if two parent names are "classes" won't work
-    // need to handle parents/grandparents etc. 
+    // can have trouble if two parents have the same name. Unique parents are needed
+    // or some way to move down to the correct parent (this is handled in FileTree)
     public boolean add(T parent, T child){
         // find the parent using breadth first search
         

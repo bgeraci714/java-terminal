@@ -60,6 +60,8 @@ public class CommandTable {
     
     protected String tree(){
         FileTree ftree = new FileTree();
+        int numDirs = 0;
+        int numFiles = 0;
         
         LinkedQueue<File> fileQueue = new LinkedQueue<>();
         File currFile;
@@ -71,12 +73,19 @@ public class CommandTable {
                 ftree.add(currFile.getParentFile(), currFile);
                 
                 if (currFile.isDirectory()){
+                    numDirs++;
                     for (File childFile : currFile.listFiles())
                         fileQueue.enqueue(childFile);
                 }
+                else 
+                    numFiles++;
             }
         }
-        return ftree.toString();
+        
+        String analysis = "\n\n" + numDirs + " directories, "
+                + numFiles + " files";
+        
+        return ftree.toString() + analysis;
     }
     
     
