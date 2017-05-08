@@ -11,7 +11,7 @@ public class Node<T> {
     public Node(T info, int level){
         this.data = info;
         this.level = level;
-        this.children = new ArrayList<>();   
+        this.children = new ArrayList<>();
     }
     
     public void setLevel(int level){

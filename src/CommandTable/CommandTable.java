@@ -65,6 +65,11 @@ public class CommandTable {
         return returnStatement;
     }
     
+    // ask and find out if concurrency could help speed this up. 
+    // create the fileTree onload() and every time cd is used but do so in the background
+    // so when tree is called, it waits for the call to finish and reports the results
+    // because this handling is on a separate thread, it should speed up the results
+    // of tree without slowing down the rest of the program
     protected String tree(){
         FileTree ftree = new FileTree();
         int numDirs = 0;

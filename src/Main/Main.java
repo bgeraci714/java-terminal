@@ -12,11 +12,7 @@ import java.util.Scanner;
 /*
 Current TODOS
  - find (make a tree of file structure below, and above (if asked for)
- - tree
  - grep 
- - turn the switch statement into a hashtable
- - improve the parser 
- - add more functions for funsies
  - flags (ls -x, rearrange things/output, *.py => only .py files, maybe also something that would show 
     when the files were created, size, last opened, or what have you)
 */
@@ -27,10 +23,6 @@ public class Main {
     
     public static void main(String[] args) throws IOException{
         
-        
-        
-        
-        //File cwd = new File(System.getProperty("user.dir"));
         CommandTable commandLine = new CommandTable();
         
         Scanner sc = new Scanner(System.in);
