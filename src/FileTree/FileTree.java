@@ -21,6 +21,8 @@ public class FileTree extends Tree implements Runnable{
     
     public synchronized void buildTree(){
         root = null;
+        numDirs = 0;
+        numFiles = 0;
         LinkedQueue<File> fileQueue = new LinkedQueue<>();
         File currFile;
         fileQueue.enqueue(cwd);

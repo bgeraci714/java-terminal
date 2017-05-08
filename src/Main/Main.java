@@ -1,12 +1,7 @@
 package Main;
 
 import CommandTable.CommandTable;
-import FileTree.Tree;
-import java.awt.Desktop;
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.nio.file.Files;
 import java.util.Scanner;
 
 /*
