@@ -18,10 +18,16 @@ public class CommandTable {
     
     File cwd;
     boolean stillTakingInput = true;
+    Runnable ftree;
     final static String[] VALID_COMMANDS = {"ls", "cd", "cwd", "open", "quit", "tree"};
     
     public CommandTable(){
-        cwd = new File(System.getProperty("user.dir"));
+        cwd = new File(System.getProperty("user.dir")); 
+        FileTree filetree = new FileTree();
+        filetree.setCwd(cwd);
+        ftree = (Runnable) filetree;
+        Thread t = new Thread(ftree);
+        t.start();
     }
     
     public CommandTable(File dir){
@@ -70,34 +76,14 @@ public class CommandTable {
     // so when tree is called, it waits for the call to finish and reports the results
     // because this handling is on a separate thread, it should speed up the results
     // of tree without slowing down the rest of the program
-    protected String tree(){
-        FileTree ftree = new FileTree();
-        int numDirs = 0;
-        int numFiles = 0;
+    protected synchronized String tree(){
         
-        LinkedQueue<File> fileQueue = new LinkedQueue<>();
-        File currFile;
-        fileQueue.enqueue(cwd);
+        FileTree fileTree = (FileTree) ftree;
         
-        while(!fileQueue.isEmpty()){
-            currFile = fileQueue.dequeue();
-            if (currFile != null && !currFile.getName().startsWith(".")){
-                ftree.add(currFile.getParentFile(), currFile);
-                
-                if (currFile.isDirectory()){
-                    numDirs++;
-                    for (File childFile : currFile.listFiles())
-                        fileQueue.enqueue(childFile);
-                }
-                else 
-                    numFiles++;
-            }
-        }
+        String analysis = "\n\n" + fileTree.getNumDirs() + " directories, "
+                + fileTree.getNumFiles() + " files";
         
-        String analysis = "\n\n" + numDirs + " directories, "
-                + numFiles + " files";
-        
-        return ftree.toString() + analysis;
+        return fileTree.toString() + analysis;
     }
     
     
@@ -160,16 +146,20 @@ public class CommandTable {
         boolean validFolder = true;
         String returnStatement;
         String trimmed = command.replace("cd", "").trim();
+        
+        // just going one level up
         if (command.contains("..")){
             cwd = cwd.getParentFile();
         }
-
+        
+        // going all the way to the top
         else if (trimmed.length() == 0){
             
             while(cwd.getParentFile() != null) {
                 cwd = cwd.getParentFile();
             }
-        }    
+        } 
+        // move to a specific folder (down)
         else {
 
             if (cwd.getAbsolutePath().endsWith(File.separator)){
@@ -186,6 +176,11 @@ public class CommandTable {
             }
         }
         if (validFolder){
+            FileTree ftree = (FileTree) this.ftree;
+            ftree.setCwd(cwd);
+            
+            Thread t = new Thread((Runnable) ftree);
+            t.start();
             returnStatement = cwd.getAbsolutePath();
         }
         else 

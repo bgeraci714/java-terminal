@@ -38,8 +38,8 @@ public class Tree<T> {
         return root.getData();
     }
     
-    public boolean appendTree(Tree subTree){
-        T rootData = (T) subTree.getRootData();
+    public boolean appendTree(Node<T> node){
+        T rootData = (T) node.getData();
         Node<T> parentNode = findParentOf(rootData);
         if (parentNode != null){
             
@@ -51,8 +51,7 @@ public class Tree<T> {
                 
                 if (children.get(i).getData().equals(rootData)){
                     
-                    children.set(i, subTree.root);
-                    System.out.println(insertLevel);
+                    children.set(i, node);
                     updateLowerLevels(parentNode.getChildren().get(i), insertLevel);
                     
                     return true;
@@ -150,10 +149,14 @@ public class Tree<T> {
             }
             
             parentNode = nodeQueue.dequeue();
+            
             if (parentNode != null){
+                System.out.println(parentNode.getChildren());
                 Iterator childNodes  = parentNode.getChildren().iterator();
                 while(childNodes.hasNext()){
+                    System.out.println("Has next?");
                     Node<T> nextNode = (Node) childNodes.next();
+                    System.out.println("Next Node data: " + nextNode.getData());
                     if (nextNode.getData().equals(data))
                         return parentNode;
                     nextQueue.enqueue(nextNode);

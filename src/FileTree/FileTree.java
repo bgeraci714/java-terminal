@@ -1,12 +1,62 @@
 package FileTree;
 
+import Queue.LinkedQueue;
 import Stack.LinkedStack;
 import java.io.File;
 import java.util.Iterator;
 
-public class FileTree extends Tree{
+public class FileTree extends Tree implements Runnable{
+    protected int numDirs = 0;
+    protected int numFiles = 0;
+    protected File cwd;
+    
+    @Override
+    public void run() {
+        buildTree();
+    }
+    
+    public void setCwd(File cwd){
+        this.cwd = cwd;
+    }
+    
+    public synchronized void buildTree(){
+        root = null;
+        LinkedQueue<File> fileQueue = new LinkedQueue<>();
+        File currFile;
+        fileQueue.enqueue(cwd);
+        
+        while(!fileQueue.isEmpty()){
+            //System.out.println("Still running...");
+            currFile = fileQueue.dequeue();
+            if (currFile != null && !currFile.getName().startsWith(".")){
+                add(currFile.getParentFile(), currFile);
+                
+                if (currFile.isDirectory()){
+                    numDirs++;
+                    try{
+                        for (File childFile : currFile.listFiles()){
+                            fileQueue.enqueue(childFile);
+                        }
+                    } catch(NullPointerException ex){} // don't do anything with the error
+                    
+                    
+                }
+                else 
+                    numFiles++;
+            }
+        }
+    }
+    
+    public synchronized int getNumDirs(){
+        return numDirs;
+    }
+    
+    public synchronized int getNumFiles(){
+        return numFiles;
+    }
+    
     @Override 
-    public String toString(){
+    public synchronized String toString(){
         String result = "";
         
         LinkedStack<Node<File>> nodeStack = new LinkedStack<>();
