@@ -6,6 +6,13 @@ import Queue.LinkedQueue;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class CommandTable {
     
@@ -91,12 +98,50 @@ public class CommandTable {
     
     protected String open(String command){
         String returnStatement = "";
-        String fileName = cwd.getAbsolutePath() + File.separator + command.replace("open", "").trim();
+        String fileName = command.replace("open", "").trim();
+        
+        // attempts to open website if -w flag is present
+        if (fileName.contains("-w")){
+            
+            try{ 
+                //URL url = new URL("http://www.google.com");
+                String urlString = fileName.replace("-w", "").trim();
+                
+                // matches www, en, and any other 0-3 character starting sequences 
+                // so long as there is a period at the end
+                Pattern p = Pattern.compile("(\\w{0,3}\\.{1})");
+                Matcher m = p.matcher(urlString);
+                
+                // appends http to the url if needed
+                if (m.find() && m.start() == 0){
+                    urlString = "http://" + urlString;
+                }
+                
+                // uses the android matcher to make sure the url is valid 
+                if (Patterns.WEB_URL.matcher(urlString).matches()){
+                    openWebpage(new URL(urlString));
+                }
+                else 
+                    throw new MalformedURLException();
+                
+                returnStatement = "Opening webpage now...";
+                
+            } catch (MalformedURLException ex) {
+                returnStatement =  "There was a problem with the URL.\n"
+                        + "The proper format is prefix.website.[com/org/io/etc...]";
+            }
+            
+            return returnStatement;
+        }
+        
+        // otherwise tries to open file
+        fileName = cwd.getAbsolutePath() + File.separator + fileName;
         File file = new File(fileName);
 
         if (file.isFile())
             try {
                 Desktop.getDesktop().open(file);
+                returnStatement = "Opening file now...";
             } catch (IOException ex) {
                 returnStatement = ex.toString();
             }
@@ -198,5 +243,25 @@ public class CommandTable {
         }        
    
        
+    }
+    
+    // used curteously from http://stackoverflow.com/questions/10967451/open-a-link-in-browser-with-java-button
+    private void openWebpage(URI uri) {
+        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                desktop.browse(uri);
+            } catch (Exception e) {
+                System.out.println("there was a problem");
+            }
+        }
+    }
+
+    private void openWebpage(URL url) {
+        try {
+            openWebpage(url.toURI());
+        } catch (URISyntaxException e) {
+            System.out.println("there was a problem");
+        }
     }
 }
