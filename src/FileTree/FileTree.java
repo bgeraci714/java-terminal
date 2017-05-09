@@ -29,7 +29,17 @@ public class FileTree extends Tree implements Runnable{
         
         while(!fileQueue.isEmpty()){
             //System.out.println("Still running...");
+            
+            // this is incredibly key. Threads could pool up without ever being handled 
+            // slowing the system down if they're not interrupted. This is much better 
+            // than using join or other alternatives as we no longer care about what 
+            // what the tree would have been if we move away from it
+            if (Thread.currentThread().isInterrupted()) {
+                break;
+            }
+            
             currFile = fileQueue.dequeue();
+
             if (currFile != null && !currFile.getName().startsWith(".")){
                 add(currFile.getParentFile(), currFile);
                 

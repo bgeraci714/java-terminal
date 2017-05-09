@@ -10,6 +10,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,14 +22,15 @@ public class CommandTable {
     boolean stillTakingInput = true;
     Runnable ftree;
     final static String[] VALID_COMMANDS = {"ls", "cd", "cwd", "open", "quit", "tree"};
+    Thread treeThread;
     
     public CommandTable(){
         cwd = new File(System.getProperty("user.dir")); 
         FileTree filetree = new FileTree();
         filetree.setCwd(cwd);
         ftree = (Runnable) filetree;
-        Thread t = new Thread(ftree);
-        t.start();
+        treeThread = new Thread(ftree);
+        treeThread.start();
     }
     
     public CommandTable(File dir){
@@ -71,12 +74,14 @@ public class CommandTable {
         return returnStatement;
     }
     
-    // ask and find out if concurrency could help speed this up. 
-    // create the fileTree onload() and every time cd is used but do so in the background
-    // so when tree is called, it waits for the call to finish and reports the results
-    // because this handling is on a separate thread, it should speed up the results
-    // of tree without slowing down the rest of the program
     protected synchronized String tree(){
+        
+        // we join here because we explicityly want what the other thread is working on. 
+        try {
+            treeThread.join();
+        } catch(InterruptedException ex){
+            System.out.println("Thread might have been interrupted.");
+        }
         
         FileTree fileTree = (FileTree) ftree;
         
@@ -176,11 +181,14 @@ public class CommandTable {
             }
         }
         if (validFolder){
+            
+            treeThread.interrupt();
+            
             FileTree ftree = (FileTree) this.ftree;
             ftree.setCwd(cwd);
             
-            Thread t = new Thread((Runnable) ftree);
-            t.start();
+            treeThread = new Thread((Runnable) ftree);
+            treeThread.start();
             returnStatement = cwd.getAbsolutePath();
         }
         else 

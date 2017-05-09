@@ -29,7 +29,9 @@ public class Main {
             System.out.print(">> ");
             String command = sc.nextLine();
             
-            System.out.println(commandLine.execute(command));           
+            System.out.println(commandLine.execute(command));
+            //System.out.println(java.lang.Thread.activeCount());
+            
         }
         
     }
