@@ -355,8 +355,11 @@ public class CommandTable {
                 sb.append(System.getProperty("line.separator"));
             }
         }
-       
-        return sb.toString();
+        
+        if (sb.toString().equals(""))
+            return "No results found.";
+        else 
+            return sb.toString();
         
     }
     
