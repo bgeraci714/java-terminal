@@ -111,7 +111,7 @@ public class CommandTable {
     
     
     protected String open(String command){
-        String returnStatement = "";
+        String returnStatement;
         String fileName = command.replace("open", "").trim();
         
         // attempts to open website if -w flag is present
@@ -148,9 +148,16 @@ public class CommandTable {
             return returnStatement;
         }
         
-        // otherwise tries to open file
-        fileName = cwd.getAbsolutePath() + File.separator + fileName;
-        File file = new File(fileName);
+        File file;
+        if (aliases.containsKey(fileName)) // checks to see if it's an alias
+            file = aliases.get(fileName);
+        else // otherwise tries to open file
+        {          
+            fileName = cwd.getAbsolutePath() + File.separator + fileName;
+            file = new File(fileName);
+        }
+        
+        
 
         if (file.isFile())
             try {
@@ -170,8 +177,12 @@ public class CommandTable {
         String returnStatement;
         String trimmed = command.replace("cd", "").trim();
         
+        if (aliases.containsKey(trimmed) && aliases.get(trimmed).isDirectory()){
+            cwd = aliases.get(trimmed);
+        }
+        
         // just going one level up
-        if (command.contains("..")){
+        else if (command.contains("..")){
             cwd = cwd.getParentFile();
         }
         
