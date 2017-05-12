@@ -1,8 +1,6 @@
 package CommandTable;
 
 import FileTree.FileTree;
-import FileTree.Tree;
-import Queue.LinkedQueue;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -10,32 +8,44 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 public class CommandTable {
     
-    File cwd;
-    boolean stillTakingInput = true;
+    protected File cwd;
+    protected boolean stillTakingInput = true;
     Runnable ftree;
-    final static String[] VALID_COMMANDS = {"ls", "cd", "cwd", "open", "quit", "tree", "find"};
-    Thread treeThread;
+    protected Thread treeThread;
+    protected HashMap<String, File> aliases;
+    final static String[] VALID_COMMANDS = {"ls", "cd", "cwd", "open", "quit", 
+                                            "tree", "find", "alias"};
     
     public CommandTable(){
-        cwd = new File(System.getProperty("user.dir")); 
+        cwd = new File(System.getProperty("user.dir"));
         FileTree filetree = new FileTree();
         filetree.setCwd(cwd);
         ftree = (Runnable) filetree;
+        
+        aliases = new HashMap<>(); 
+        
         treeThread = new Thread(ftree);
         treeThread.start();
     }
     
     public CommandTable(File dir){
         cwd = dir;
+        FileTree filetree = new FileTree();
+        filetree.setCwd(cwd);
+        ftree = (Runnable) filetree;
+        
+        aliases = new HashMap<>();
+        
+        treeThread = new Thread(ftree);
+        treeThread.start();
     }
     
     public boolean isStillTakingInput(){
@@ -43,6 +53,7 @@ public class CommandTable {
     }
     
     public String execute(String command){
+        
         String cmd = parseCmd(command);
         
         if (cmd == null)
@@ -53,6 +64,9 @@ public class CommandTable {
         switch (cmd){
             case "quit":
                 stillTakingInput = false;
+                break;
+            case "alias":
+                returnStatement = alias(command);
                 break;
             case "tree":
                 returnStatement = tree();
@@ -382,5 +396,51 @@ public class CommandTable {
         }
         
         return recList;
+    }
+
+    private String alias(String command) {
+        final String SPACER = "k4LjQH-zE#:T7^kE";
+        
+        String[] commandArguments = command.replace("alias", "").trim().replace("\\ ", SPACER).split(" ");
+        
+        if (commandArguments.length > 2 || 
+            commandArguments.length == 0 || 
+            commandArguments[0].length() == 0)
+            return "Invalid number of arguments. Usage: alias alias_name [full file path]";
+        
+        
+        if (commandArguments.length == 1){
+            String alias = commandArguments[0].replace(SPACER, " ");
+            aliases.put(alias, cwd);
+            return "Saved " + alias + " as an alias for " + cwd.getAbsolutePath();
+        }
+        else {
+            File aliasFilePath = null;
+            String alias;
+            int indexOfFile = 0;
+            
+            commandArguments[0] = commandArguments[0].replace(SPACER, " ");
+            commandArguments[1] = commandArguments[1].replace(SPACER, " ");
+            
+            for (int i = 0; i < commandArguments.length; i++){
+                
+                if ((new File(commandArguments[i])).exists()){
+                    aliasFilePath = new File(commandArguments[i]);
+                    indexOfFile = i;
+                    i++;
+                }
+            }
+
+            if (aliasFilePath == null)
+                return "Two arguments were given but no valid file path supplied.";
+            
+            if (indexOfFile == 0)
+                alias = commandArguments[1];
+            else 
+                alias = commandArguments[0];
+            
+            aliases.put(alias, aliasFilePath);
+            return "Saved " + commandArguments[0] + " as an alias for " + aliasFilePath.getAbsolutePath();
+        }
     }
 }
