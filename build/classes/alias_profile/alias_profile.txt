@@ -1,0 +1,3 @@
+spr17 /Users/bgspiral/Documents/School/HCC/Spring\ 2017
+docs /Users/bgspiral/Documents
+cmd /Users/bgspiral/Documents/School/HCC/Spring\ 2017/CSI\ 256/hw/CommandLine

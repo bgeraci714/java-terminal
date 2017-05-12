@@ -19,6 +19,7 @@ public class Main {
     public static void main(String[] args) throws IOException{
         
         CommandTable commandLine = new CommandTable();
+        commandLine.loadAliases();
         
         Scanner sc = new Scanner(System.in);
         System.out.println("Working Directory = " +

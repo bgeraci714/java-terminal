@@ -1,20 +1,22 @@
 package CommandTable;
 
+import FileIO.HashIO;
 import FileTree.FileTree;
+
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import java.net.*;
+import java.util.*;
+import java.util.regex.*;
 
 
 public class CommandTable {
+    
+    protected HashIO hIO;
+    protected File hashCache;
+    protected List<String> aliasList = new  ArrayList<>();
     
     protected File cwd;
     protected boolean stillTakingInput = true;
@@ -30,7 +32,8 @@ public class CommandTable {
         filetree.setCwd(cwd);
         ftree = (Runnable) filetree;
         
-        aliases = new HashMap<>(); 
+        aliases = new HashMap<>();
+        
         
         treeThread = new Thread(ftree);
         treeThread.start();
@@ -48,6 +51,28 @@ public class CommandTable {
         treeThread.start();
     }
     
+    public void loadAliases(){
+        final String FILE_PATH = "src@alias_profile@alias_profile.txt".replace("@",File.separator);
+        hashCache = new File(FILE_PATH);
+        //if (hashCache.exists()){
+            hIO = new HashIO(hashCache.getAbsolutePath());
+            List<String> loadList = null;
+            try {
+                loadList = hIO.LoadHash();
+            } catch (Exception ex) {
+                System.out.println("We were unable to load any aliases.");
+            }
+
+            if (loadList != null){
+                Iterator itr = loadList.iterator();
+                while (itr.hasNext())
+                {
+                    alias((String) itr.next());
+                }
+            }
+        //}
+    }
+    
     public boolean isStillTakingInput(){
         return stillTakingInput;
     }
@@ -63,6 +88,8 @@ public class CommandTable {
         String returnStatement = "";
         switch (cmd){
             case "quit":
+                treeThread.interrupt();
+                saveAliases();
                 stillTakingInput = false;
                 break;
             case "alias":
@@ -313,7 +340,6 @@ public class CommandTable {
 
     private String alias(String command) {
         final String SPACER = "k4LjQH-zE#:T7^kE";
-        
         String[] commandArguments = command.replace("alias", "").trim().replace("\\ ", SPACER).split(" ");
         
         if (commandArguments.length > 2 || 
@@ -355,5 +381,26 @@ public class CommandTable {
             aliases.put(alias, aliasFilePath);
             return "Saved " + commandArguments[0] + " as an alias for " + aliasFilePath.getAbsolutePath();
         }
+    }
+    
+    private void saveAliases()
+    {
+        StringBuilder sb;
+        aliasList.clear();
+        for(Map.Entry<String, File> entry : aliases.entrySet())
+        {
+            sb = new StringBuilder();
+            String key = entry.getKey();
+            String value = entry.getValue().getAbsolutePath();
+            sb.append(key);
+            sb.append(" ");
+            sb.append(value.replace(" ", "\\ "));
+           
+            aliasList.add(sb.toString());
+        }
+       
+        try { 
+            hIO.SaveEvents(aliasList);
+        } catch (Exception ex){}
     }
 }
