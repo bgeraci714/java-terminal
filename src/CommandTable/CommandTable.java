@@ -1,6 +1,4 @@
 package CommandTable;
-
-import FileIO.HashIO;
 import FileTree.FileTree;
 
 import java.awt.Desktop;
@@ -13,10 +11,6 @@ import java.util.regex.*;
 
 
 public class CommandTable {
-    
-    protected HashIO hIO;
-    protected File hashCache;
-    protected List<String> aliasList = new  ArrayList<>();
     
     protected File cwd;
     protected boolean stillTakingInput = true;
@@ -51,32 +45,6 @@ public class CommandTable {
         treeThread.start();
     }
     
-    public void loadAliases(){
-        final String FILE_PATH = "src@alias_profile@alias_profile.txt".replace("@",File.separator);
-        hashCache = new File(FILE_PATH);
-        //if (hashCache.exists()){
-            hIO = new HashIO(hashCache.getAbsolutePath());
-            List<String> loadList = null;
-            try {
-                loadList = hIO.LoadHash();
-            } catch (Exception ex) {
-                System.out.println("We were unable to load any aliases.");
-            }
-
-            if (loadList != null){
-                Iterator itr = loadList.iterator();
-                while (itr.hasNext())
-                {
-                    alias((String) itr.next());
-                }
-            }
-        //}
-    }
-    
-    public boolean isStillTakingInput(){
-        return stillTakingInput;
-    }
-    
     public String execute(String command){
         
         String cmd = parseCmd(command);
@@ -89,7 +57,6 @@ public class CommandTable {
         switch (cmd){
             case "quit":
                 treeThread.interrupt();
-                saveAliases();
                 stillTakingInput = false;
                 break;
             case "alias":
@@ -136,7 +103,6 @@ public class CommandTable {
         return fileTree.toString() + analysis;
     }
     
-    
     protected String open(String command){
         String returnStatement;
         String fileName = command.replace("open", "").trim();
@@ -160,7 +126,7 @@ public class CommandTable {
                 
                 // uses the android matcher to make sure the url is valid 
                 if (Patterns.WEB_URL.matcher(urlString).matches()){
-                    openWebpage(new URL(urlString));
+                    WebHandler.openWebpage(new URL(urlString));
                 }
                 else 
                     throw new MalformedURLException();
@@ -176,17 +142,21 @@ public class CommandTable {
         }
         
         File file;
-        if (aliases.containsKey(fileName)) // checks to see if it's an alias
+        
+        // checks to see if it's an alias
+        if (aliases.containsKey(fileName)) 
             file = aliases.get(fileName);
-        else // otherwise tries to open file
+        
+        // otherwise tries to open file
+        else 
         {          
             fileName = cwd.getAbsolutePath() + File.separator + fileName;
             file = new File(fileName);
         }
         
         
-
-        if (file.isFile())
+        // verifies that the file actually is a file 
+        if (file.exists() && file.isFile())
             try {
                 Desktop.getDesktop().open(file);
                 returnStatement = "Opening file now...";
@@ -240,8 +210,7 @@ public class CommandTable {
             
             treeThread.interrupt();
             
-            FileTree ftree = (FileTree) this.ftree;
-            ftree.setCwd(cwd);
+            ((FileTree) ftree).setCwd(cwd);
             
             treeThread = new Thread((Runnable) ftree);
             treeThread.start();
@@ -272,26 +241,6 @@ public class CommandTable {
         return null;
     }
       
-    // used curteously from http://stackoverflow.com/questions/10967451/open-a-link-in-browser-with-java-button
-    private void openWebpage(URI uri) {
-        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-            try {
-                desktop.browse(uri);
-            } catch (Exception e) {
-                System.out.println("there was a problem");
-            }
-        }
-    }
-
-    private void openWebpage(URL url) {
-        try {
-            openWebpage(url.toURI());
-        } catch (URISyntaxException e) {
-            System.out.println("there was a problem");
-        }
-    }
-
     private String find(String command) 
     {
         String fileName = command.replace("find", "").trim();
@@ -383,24 +332,18 @@ public class CommandTable {
         }
     }
     
-    private void saveAliases()
-    {
-        StringBuilder sb;
-        aliasList.clear();
-        for(Map.Entry<String, File> entry : aliases.entrySet())
-        {
-            sb = new StringBuilder();
-            String key = entry.getKey();
-            String value = entry.getValue().getAbsolutePath();
-            sb.append(key);
-            sb.append(" ");
-            sb.append(value.replace(" ", "\\ "));
-           
-            aliasList.add(sb.toString());
-        }
-       
-        try { 
-            hIO.SaveEvents(aliasList);
-        } catch (Exception ex){}
+    
+    // Simple and uninteresting getters/setters
+    
+    public void setAliases(HashMap<String, File> aliases){
+        this.aliases = aliases;
+    }
+    
+    public HashMap<String, File> getAliases(){
+        return this.aliases;
+    }
+    
+    public boolean isStillTakingInput(){
+        return stillTakingInput;
     }
 }

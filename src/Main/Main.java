@@ -1,6 +1,7 @@
 package Main;
 
 import CommandTable.CommandTable;
+import FileIO.AliasIO;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -19,7 +20,8 @@ public class Main {
     public static void main(String[] args) throws IOException{
         
         CommandTable commandLine = new CommandTable();
-        commandLine.loadAliases();
+        
+        commandLine.setAliases(AliasIO.loadAliases());
         
         Scanner sc = new Scanner(System.in);
         System.out.println("Working Directory = " +
@@ -34,6 +36,11 @@ public class Main {
             //System.out.println(java.lang.Thread.activeCount());
             
         }
+        
+        if (AliasIO.saveAliases(commandLine.getAliases()))
+            System.out.println("Aliases successfully saved.");
+        else 
+            System.out.println("Aliases were not successfully saved.");
         
     }
     
