@@ -65,8 +65,10 @@ public class AliasIO {
                 }
             }
             
-        } catch (FileNotFoundException|NoSuchElementException ex) {
-            System.out.println("\nThere was an issue loading the alias profile file.");
+        } catch (FileNotFoundException ex) {
+            System.out.println("No alias profile was found.");
+        } catch (NoSuchElementException ex){
+            System.out.println("There was an issue loading the alias profile.");
         }
         
         
