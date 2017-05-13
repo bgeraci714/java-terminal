@@ -247,18 +247,15 @@ public class CommandTable {
     {
         String fileName = command.replace("find", "").trim();
         LinkedList<File> currentFiles = new LinkedList<>();
-        currentFiles.addAll(recFileList(cwd));
+        currentFiles.addAll(recFileFind(cwd, fileName));
         
         StringBuilder sb = new StringBuilder();
-        //Prune the bad results
+
         for (File fileI : currentFiles) 
         {
-            if (fileI.getName().toLowerCase().contains(fileName.toLowerCase())) 
-            {
-                String FP = fileI.getAbsolutePath();
-                sb.append(Colors.highlight(FP, fileName));
-                sb.append(System.getProperty("line.separator"));
-            }
+            String FP = fileI.getAbsolutePath();
+            sb.append(Colors.highlight(FP, fileName));
+            sb.append(System.getProperty("line.separator"));
         }
         
         if (sb.toString().equals(""))
@@ -268,7 +265,7 @@ public class CommandTable {
         
     }
     
-    private LinkedList<File> recFileList(File folder)
+    private LinkedList<File> recFileFind(File folder, String contains)
     {
         LinkedList<File> recList = new LinkedList<>();
         
@@ -276,13 +273,18 @@ public class CommandTable {
         {
             if (workingFile.isDirectory()) 
             {
-                recList.addAll(recFileList(workingFile));
-                recList.add(workingFile);
-                
+                recList.addAll(recFileFind(workingFile, contains));
+                if (workingFile.getName().toLowerCase().contains(contains.toLowerCase())) 
+                {
+                    recList.add(workingFile);
+                }
             }
             else
             {
-                recList.add(workingFile);
+                if (workingFile.getName().toLowerCase().contains(contains.toLowerCase())) 
+                {
+                    recList.add(workingFile);
+                }
             }
         }
         
