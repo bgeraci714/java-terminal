@@ -24,12 +24,10 @@ public class AliasIO {
             
             PrintWriter writer = new PrintWriter(ALIAS_FILE_PATH, "UTF-8");
             
-            Iterator entries = aliases.entrySet().iterator();
-            
-            while (entries.hasNext()) {
-                Map.Entry<String, File> currEntry = (Map.Entry) entries.next();
+            for (Map.Entry<String, File> currEntry : aliases.entrySet()){
                 writer.println(currEntry.getKey() + "," + currEntry.getValue().getAbsolutePath().replace(" ", "\\ "));
-            }     
+            }
+                
             writer.close();
             return true;
         } 
