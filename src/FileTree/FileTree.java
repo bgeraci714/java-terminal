@@ -9,9 +9,11 @@ public class FileTree extends Tree implements Runnable{
     protected int numDirs = 0;
     protected int numFiles = 0;
     protected File cwd;
+    protected boolean finishedBuilding = false;
     
     @Override
     public void run() {
+        
         buildTree();
     }
     
@@ -20,6 +22,22 @@ public class FileTree extends Tree implements Runnable{
     }
     
     public synchronized void buildTree(){
+        
+        Node<File> lowerRoot = find(cwd);
+        
+        // makes sure the previous tree had finished so we don't get an incomplete tree
+        if (finishedBuilding && lowerRoot != null){
+            
+            finishedBuilding = false;
+            reRootDown(lowerRoot);
+            
+            if (!Thread.currentThread().isInterrupted())
+                finishedBuilding = true;
+            
+            return;
+        }
+        
+        finishedBuilding = false;
         root = null;
         numDirs = 0;
         numFiles = 0;
@@ -27,16 +45,7 @@ public class FileTree extends Tree implements Runnable{
         File currFile;
         fileQueue.enqueue(cwd);
         
-        while(!fileQueue.isEmpty()){
-            //System.out.println("Still running...");
-            
-            // this is incredibly key. Threads could pool up without ever being handled 
-            // slowing the system down if they're not interrupted. This is much better 
-            // than using join or other alternatives as we no longer care about what 
-            // what the tree would have been if we move away from it
-            if (Thread.currentThread().isInterrupted()) {
-                break;
-            }
+        while(!fileQueue.isEmpty() && !Thread.currentThread().isInterrupted()){
             
             currFile = fileQueue.dequeue();
 
@@ -56,6 +65,10 @@ public class FileTree extends Tree implements Runnable{
                 else 
                     numFiles++;
             }
+        }
+        
+        if (!Thread.currentThread().isInterrupted()){
+            finishedBuilding = true;
         }
     }
     
@@ -89,7 +102,7 @@ public class FileTree extends Tree implements Runnable{
                 // this is necessary for making sure that when child files/folders 
                 // are added of type File as opposed to of type string, they are 
                 // placed where they should be as opposed to a folder with the same name
-                // (all files with a parent of "src" were placed in the same subtree for example
+                // (all files with a parent of "src" were being placed in the same subtree for example)
                 result += currNode.getData().getName();
             }
             if (currNode != null && !currNode.getChildren().isEmpty()){
@@ -102,5 +115,69 @@ public class FileTree extends Tree implements Runnable{
         }
         
         return result;
+    }
+    
+    public synchronized String getAnalysisString(){
+        
+        String analysis = "\n\n" + numDirs;
+        
+        if (numDirs > 1)
+            analysis += " directories, ";
+        else 
+            analysis += " directory, ";
+        
+        analysis += numFiles;
+        
+        if (numFiles > 1)
+            analysis += " files";
+        else 
+            analysis += " file";
+        
+        
+        return analysis;
+    
+    }
+    
+    // removed the find call because we need it anyways before calling reRootDown
+    public boolean reRootDown(Node<File> newRoot){
+        if (newRoot != null){
+            int levelDiff = root.getLevel() - newRoot.getLevel();
+            root = newRoot;
+            
+            updateLowerNodes(root, levelDiff);
+            return true;
+        }
+        else 
+            return false;
+    }
+    
+    public void updateLowerNodes(Node<File> startNode, int diff){
+        
+        numDirs = 0;
+        numFiles = 0;
+        
+        LinkedStack<Node<File>> nodeStack = new LinkedStack<>();
+        Node<File> currNode;
+        nodeStack.push(startNode);
+        
+        while (!nodeStack.isEmpty() && !Thread.currentThread().isInterrupted()) {
+        
+            currNode = nodeStack.top();
+            nodeStack.pop();
+            if (currNode != null){
+                currNode.setLevel(currNode.getLevel() + diff);
+            }
+            if (currNode != null && !currNode.getChildren().isEmpty()){
+                numDirs++;
+                Iterator childNodes  = currNode.getChildren().iterator();
+                while(childNodes.hasNext()){
+                    nodeStack.push((Node) childNodes.next());
+                }
+            }
+            else 
+                numFiles++;
+            // otherwise the node is null, don't do anything with it
+        }
+        
     }
 }

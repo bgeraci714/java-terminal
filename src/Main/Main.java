@@ -33,8 +33,6 @@ public class Main {
             String command = sc.nextLine();
             
             System.out.println(commandLine.execute(command));
-            //System.out.println(java.lang.Thread.activeCount());
-            
         }
         
         if (AliasIO.saveAliases(commandLine.getAliases()))

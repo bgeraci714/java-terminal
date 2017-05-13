@@ -62,7 +62,7 @@ public class Tree<T> {
         return false;
     }
     
-    public boolean reRootDown(T data){
+    public synchronized boolean reRootDown(T data){
         Node<T> newRoot = find(data);
         if (newRoot != null){
             int levelDiff = root.getLevel() - newRoot.getLevel();

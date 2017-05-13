@@ -1,14 +1,16 @@
 package CommandTable;
+
 import FileTree.FileTree;
 
 import java.awt.Desktop;
-import java.io.File;
+import java.io.File; 
 import java.io.IOException;
-
-import java.net.*;
-import java.util.*;
-import java.util.regex.*;
-
+import java.net.MalformedURLException; 
+import java.net.URL;
+import java.util.HashMap; 
+import java.util.LinkedList;
+import java.util.regex.Matcher; 
+import java.util.regex.Pattern;
 
 public class CommandTable {
     
@@ -100,10 +102,7 @@ public class CommandTable {
         
         FileTree fileTree = (FileTree) ftree;
         
-        String analysis = "\n\n" + fileTree.getNumDirs() + " directories, "
-                + fileTree.getNumFiles() + " files";
-        
-        return fileTree.toString() + analysis;
+        return fileTree.toString() + fileTree.getAnalysisString();
     }
     
     protected String open(String command){
@@ -362,4 +361,5 @@ public class CommandTable {
     public boolean isStillTakingInput(){
         return stillTakingInput;
     }
+    
 }
