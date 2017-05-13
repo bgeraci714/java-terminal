@@ -18,7 +18,7 @@ public class CommandTable {
     protected Thread treeThread;
     protected HashMap<String, File> aliases;
     final static String[] VALID_COMMANDS = {"ls", "cd", "cwd", "open", "quit", 
-                                            "tree", "find", "alias"};
+                                            "tree", "find", "rm_alias", "alias"};
     
     public CommandTable(){
         cwd = new File(System.getProperty("user.dir"));
@@ -58,6 +58,9 @@ public class CommandTable {
             case "quit":
                 treeThread.interrupt();
                 stillTakingInput = false;
+                break;
+            case "rm_alias":
+                returnStatement = rm_alias(command);
                 break;
             case "alias":
                 returnStatement = alias(command);
@@ -330,6 +333,19 @@ public class CommandTable {
             aliases.put(alias, aliasFilePath);
             return "Saved " + commandArguments[0] + " as an alias for " + aliasFilePath.getAbsolutePath();
         }
+    }
+    
+    private String rm_alias(String command) 
+    {
+        String key = command.replace("rm_alias", "").trim();
+        
+        if (aliases.containsKey(key)) 
+        {
+            aliases.remove(key);
+            return key + " was successfully removed from your aliases.";
+        }
+        else
+            return key + " was not a registered alias.";
     }
     
     

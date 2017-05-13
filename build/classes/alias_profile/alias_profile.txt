@@ -1,2 +1,1 @@
 currr,/Users/bgspiral/Documents/School/HCC/Spring\ 2017/CSI\ 256/hw/CommandLine
-curr,/Users/bgspiral/Documents/School/HCC/Spring\ 2017/CSI\ 256/hw
