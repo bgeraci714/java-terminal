@@ -13,8 +13,6 @@ import java.util.Scanner;
 
 public class AliasIO {
     final static String ALIAS_FILE_PATH = "src@alias_profile@alias_profile.txt".replace("@",File.separator);
-    final static String SPACER = "k4LjQH-zE#:T7^kE";
-    
     
     public static boolean saveAliases(HashMap<String, File> aliases){
         File aliasFile = new File(ALIAS_FILE_PATH);
