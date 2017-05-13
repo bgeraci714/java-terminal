@@ -1,4 +1,4 @@
-package FileIO;
+package CommandTable;
 
 import java.io.File;
 import java.io.FileNotFoundException;

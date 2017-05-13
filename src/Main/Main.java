@@ -1,7 +1,7 @@
 package Main;
 
 import CommandTable.CommandTable;
-import FileIO.AliasIO;
+import CommandTable.AliasIO;
 import java.io.IOException;
 import java.util.Scanner;
 
