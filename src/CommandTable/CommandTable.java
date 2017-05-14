@@ -323,7 +323,7 @@ public class CommandTable {
     }
     
     private String manual(String command){
-        return Manual.general();
+        return Manual.specMethod(command);
     }
 
     private String alias(String command) {

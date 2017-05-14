@@ -2,9 +2,11 @@ package CommandTable;
 
 public class Manual {
     private static final String man = "This is a general manual for the Java Terminal.";
+    final static String ANSI_GREEN = "\u001B[32m";
+    final static String ANSI_RESET = "\u001B[0m";
     final static String spacer = "             ";
     final static String[] VALID_COMMANDS = {"ls", "cd", "open", "quit", "grep", 
-                                            "tree", "find", "rm_alias", "alias", "manual", "cwd", "quickTree", "timer"};  
+                                            "tree", "find", "rm_alias", "alias", "manual", "cwd", "quicktree", "timer"};  
     final static String[] COMMAND_DESCRIPTIONS = {
                                                   "lists the files in the current directory\nUsage:       "
                                                    + "ls", 
@@ -28,7 +30,10 @@ public class Manual {
                                                   
                                                   "pretty prints out the below file structure in a tree-like format. \n"
                                                   + spacer + "advised not to use at the root dir or other folders with a lot (11,000+) folders/files. \n"
-                                                  + spacer + "do note, that the project is still working. It just takes time to complete!", 
+                                                  + spacer + "do note, that the project is still working. It just takes time to complete!\n"
+                                                  + spacer + "tree has a new replacement named " + ANSI_GREEN + "quicktree" + ANSI_RESET + ", try out the " + ANSI_GREEN + "timer" + ANSI_RESET + " function to see the\n"
+                                                  + spacer + "to see the difference."
+                                                  + "\nUsage:       tree", 
                                                   
                                                   "searches all directory/file names below the current working directory for a search query. \nUsage:       "
                                                   + "find search_query -> returns highlighted occurences of the search query", 
@@ -48,7 +53,7 @@ public class Manual {
                                                    + "cwd",
                             
                                                   "a much quicker version of tree. Doesn't use the FileTree data structure.\nUsage:       "
-                                                   + "quickTree",
+                                                   + "quicktree",
                                                   
                                                   "shows how long the previously used command took to finish running.\nUsage:       "
                                                    + "timer"
@@ -65,6 +70,29 @@ public class Manual {
         }
         
         return result;
+    }
+    
+    public static String specMethod(String command)
+    {
+        String[] args = command.replaceFirst("manual", "").trim().split(" ");
+        if (args.length == 0)
+            return general();
+        
+        
+        int i;
+        for (String arg : args){
+            i = 0;
+        
+            while (i < VALID_COMMANDS.length){
+            
+            
+            if (VALID_COMMANDS[i].equals(arg))
+                return "Command:     " + Colors.highlight(VALID_COMMANDS[i], VALID_COMMANDS[i], "green") + "\nDescription: " + COMMAND_DESCRIPTIONS[i] + "\n\n";
+            else 
+                i++;
+            }
+        }
+        return general();
     }
            
 }
