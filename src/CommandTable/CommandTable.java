@@ -115,7 +115,7 @@ public class CommandTable {
         endTime = System.nanoTime();
         Double timeDiff = (endTime - startTime) / 1000000000.0;
         if (willPrintTime){
-            returnStatement += "\nTime taken: " + timeDiff.floatValue() + " seconds.";
+            returnStatement = "Time taken: " + timeDiff.floatValue() + " seconds.\n" + returnStatement;
         }
         return returnStatement;
     }

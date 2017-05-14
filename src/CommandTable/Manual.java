@@ -4,7 +4,7 @@ public class Manual {
     private static final String man = "This is a general manual for the Java Terminal.";
     final static String spacer = "             ";
     final static String[] VALID_COMMANDS = {"ls", "cd", "open", "quit", "grep", 
-                                            "tree", "find", "rm_alias", "alias", "manual", "cwd"};  
+                                            "tree", "find", "rm_alias", "alias", "manual", "cwd", "quickTree", "timer"};  
     final static String[] COMMAND_DESCRIPTIONS = {
                                                   "lists the files in the current directory\nUsage:       "
                                                    + "ls", 
@@ -45,10 +45,17 @@ public class Manual {
                                                    + "manual ",
     
                                                   "prints out the current working directory\nUsage:       "
-                                                   + "cwd"};  
+                                                   + "cwd",
+                            
+                                                  "a much quicker version of tree. Doesn't use the FileTree data structure.\nUsage:       "
+                                                   + "quickTree",
+                                                  
+                                                  "shows how long the previously used command took to finish running.\nUsage:       "
+                                                   + "timer"
+                                                  };  
     
     public static String general(){
-        String spacer = "             ";
+        
         String result = "This project is meant to mimic the Unix Terminal in a handful of its functions.\n" +
                 "Valid Commands: \n";
         
