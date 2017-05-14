@@ -32,8 +32,7 @@ Below is a full list of valid commands and their usage:
     
     Description: exits the terminal and saves aliases. 
     
-    Usage:
-             quit 
+    Usage:   quit 
 
 #### Command:     grep
     
