@@ -120,71 +120,7 @@ public class CommandTable {
         return returnStatement;
     }
     
-    public String TreeFiddy(){
-        String result = "";
-        
-        int numFiles = 0;
-        int numDirs = 0;
-        
-        Stack<File> nodeStack = new Stack<>();
-        File currNode;
-        nodeStack.push(cwd);
-        
-        
-        while (!nodeStack.isEmpty()) {
-            
-            currNode = nodeStack.pop();
-            if (currNode != null){
-
-                result += "\n" + parentCountNonRec(currNode) + currNode.getName();
-            }
-            
-            if (currNode != null && currNode.listFiles() != null){
-                numDirs++;
-                for (File childFile : currNode.listFiles()){
-                    if (!currNode.getName().startsWith("."))
-                        nodeStack.push(childFile);
-                }
-            }
-            else 
-                numFiles++;
-            // otherwise the node is null, don't do anything with it
-        
-        }
-        String analysis = "\n\n" + numDirs;
-
-        if (numDirs > 1)
-            analysis += " directories, ";
-        else
-            analysis += " directory, ";
-
-        analysis += numFiles;
-
-        if (numFiles > 1)
-            analysis += " files";
-        else
-            analysis += " file";
-
-        
-        return result + analysis;
-    }
     
-    private String parentCountNonRec(File child){
-        String result = "";
-        File currFile = child;
-        while (currFile.getParentFile() != null){
-            currFile = currFile.getParentFile();
-            result += "---";
-        }
-        return result;
-    }
-    
-    private String parentCount(File child){
-        if (child.getParentFile() == null)
-            return "";
-        else 
-            return "---" + parentCount(child.getParentFile());
-    }
     
     protected synchronized String tree(){
         
@@ -556,6 +492,75 @@ public class CommandTable {
         return section;
     }
     
+    public String TreeFiddy()
+    // wrote this for the heck of it. Take a lot of what the FileTree structure does but work directly with
+    // with the files themselves to speed up processing. Thus far, it's proven to be much quicker. 
+    // because there's a lot less overhead, each file is only ever needed once. 
+    {
+        String result = "";
+        
+        int numFiles = 0;
+        int numDirs = 0;
+        
+        Stack<File> nodeStack = new Stack<>();
+        File currNode;
+        nodeStack.push(cwd);
+        
+        
+        while (!nodeStack.isEmpty()) {
+            
+            currNode = nodeStack.pop();
+            if (currNode != null){
+
+                result += "\n" + parentCountNonRec(currNode) + currNode.getName();
+            }
+            
+            if (currNode != null && currNode.listFiles() != null){
+                numDirs++;
+                for (File childFile : currNode.listFiles()){
+                    if (!currNode.getName().startsWith("."))
+                        nodeStack.push(childFile);
+                }
+            }
+            else 
+                numFiles++;
+            // otherwise the node is null, don't do anything with it
+        
+        }
+        String analysis = "\n\n" + numDirs;
+
+        if (numDirs > 1)
+            analysis += " directories, ";
+        else
+            analysis += " directory, ";
+
+        analysis += numFiles;
+
+        if (numFiles > 1)
+            analysis += " files";
+        else
+            analysis += " file";
+
+        
+        return result + analysis;
+    }
+    
+    private String parentCountNonRec(File child){
+        String result = "";
+        File currFile = child;
+        while (currFile.getParentFile() != null){
+            currFile = currFile.getParentFile();
+            result += "---";
+        }
+        return result;
+    }
+    
+    private String parentCount(File child){
+        if (child.getParentFile() == null)
+            return "";
+        else 
+            return "---" + parentCount(child.getParentFile());
+    }
     
     // Simple and uninteresting getters/setters
     
