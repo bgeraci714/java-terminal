@@ -21,7 +21,8 @@ Below is a full list of valid commands and their usage:
 
 #### Command:     open
 
-    Description: opens a file or website passed in as an argument. takes into account current working directory
+    Description: opens a file or website passed in as an argument. 
+                 takes into account current working directory
     
     Usage:   open valid/file/path -> opens file with default program. 
              open name_of_an_alias -> opens file with default program.
@@ -43,8 +44,9 @@ Below is a full list of valid commands and their usage:
 #### Command:     tree
 
     Description: pretty prints out the below file structure in a tree-like format. 
-                 advised not to use at the root dir or other folders with a lot (11,000+) folders/files. 
-                 do note, that the project is still working. It just takes time to complete!
+                 advised not to use at the root dir or other folders with a lot of (11,000+) 
+                 folders/files unless time isn't a concern. do note that the project is still working. 
+                 It just takes time to complete!
     
     Usage:   tree
     
@@ -63,7 +65,7 @@ Below is a full list of valid commands and their usage:
 
 #### Command:     alias
 
-    Description: creates a shortcut to a given file or directory path. Makes traversing the file structure much easier. 
+    Description: creates a shortcut to a given file or directory path. 
                  Loads and saves a user's aliases at the start and end of a terminal session. 
     
     Usage:   alias name_of_an_alias -> saves an alias for the current working directory
