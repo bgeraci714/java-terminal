@@ -365,95 +365,109 @@ public class CommandTable {
             return key + " was not a registered alias.";
     }
     
-    private String grep(String command) 
+    private String grep(String command)
     {
-        String blah = command.replaceFirst("grep", "").trim();
+        String blah = command.replace("grep", "").trim();
         String searchTerm = "";
+       
+        //Grab the section between quotes
         Pattern p = Pattern.compile("\"([^\"]*)\"");
         Matcher m = p.matcher(blah);
+       
         String path = "";
         List<String> fullWords = new ArrayList<>();
-        
+       
         int matchCount = 0;
-            while (m.find()) 
+            while (m.find())
             {
                 searchTerm = m.group();
                 path = blah.replace(searchTerm,"").trim();
+                //Remove the quotes from the string
                 searchTerm = searchTerm.substring(1, searchTerm.length() -1);
                 matchCount ++;
             }
-            
+           
+        //File validation
         File fileToUse = new File(path);            
-        if (matchCount != 1) 
+        if (matchCount != 1)
             return "Please one and only one set of search terms";
-
-        if (!fileToUse.exists()) 
+ 
+        if (!fileToUse.exists())
             return "Supplied file does not exist";
-        
+       
         if (!fileToUse.canRead() || !fileToUse.isFile())
             return "Unable to read filetype";
+       
         try
         {
             FileInputStream fStream = new FileInputStream(fileToUse);
             BufferedReader br = new BufferedReader(new InputStreamReader(fStream));
             String line;
-            while((line = br.readLine()) != null)
+            while((line = br.readLine()) != null) //While there are lines to read
             {
-                if (line.contains(searchTerm)) 
+                if (line.contains(searchTerm)) //if the line contains the term
                 {
-                    String lineRemain = line;
+                    String lineRemain = line; //push full line into the function
                     while (lineRemain.contains(searchTerm))
                     {
                         int[] section = wordIndexPull(lineRemain, searchTerm);
-                        fullWords.add(lineRemain.substring(section[0], section[1]));
-                        lineRemain = lineRemain.substring(section[1]);
+                        //Returns the indexes of where the first occurance of that word begins and ends
+                        fullWords.add(lineRemain.substring(section[0], section[1])); //So add that word into the list.
+                        lineRemain = lineRemain.substring(section[1]); //reduce the search of the line, repeat.
                     }
                 }
             }
-                        
+                       
         } catch (Exception ex){}
-        
+       
+        //Build the string
+       
         StringBuilder sb = new StringBuilder();
         sb.append("Found: \"").append(searchTerm).append("\" ").append(fullWords.size());
         sb.append(" times in document:").append(System.lineSeparator());
         sb.append(path).append(System.lineSeparator());
-        for (String word : fullWords) 
+        for (String word : fullWords)
         {
             sb.append(word.trim());
             sb.append(" ");
         }
         return sb.toString();
     }
-    
+   
+   
+    //Warning, this requires you to be sure the search term is contained in the line.
     private int[] wordIndexPull(String line, String searchTerm)
     {
-        int start = line.indexOf(searchTerm);
+            int start = line.indexOf(searchTerm);
+            //Index of the beginning of the
             boolean found = false;
             int secStart = start;
             int secEnd = start + searchTerm.length();
+            //index of the end of the term
             while (secStart > 0 && !found)
             {
-                
-                
+                //Go to the left of the string until the term is seperated
                 if (line.toCharArray()[secStart] == ' ')
                 {
                     found = true;
                 }
                 else
                     secStart --;
+                //index of the full word's start.
             }
             found = false;
             while (secEnd < line.length() && !found)
             {
-
+                //Go to the right of the string until the term is seperated
                 if(line.toCharArray()[secEnd] == ' ')
                 {
                     found = true;
                 }
                 else
                     secEnd ++;
+                //secEnd is now the index of the final section.
             }
-            
+           
         int[] section = new int[] {secStart, secEnd};
         return section;
     }
