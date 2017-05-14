@@ -1,6 +1,6 @@
 # java-terminal
 
-## This project is meant to mimic the Unix Terminal in a handful of its functions.
+This project is meant to mimic the Unix Terminal and a handful of its functions. 
 
 Below is a full list of valid commands and their usage: 
 
