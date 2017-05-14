@@ -20,12 +20,13 @@ import java.util.regex.Pattern;
 
 public class CommandTable {
     
+    protected boolean willPrintTime = false; 
     protected File cwd;
     protected boolean stillTakingInput = true;
     Runnable ftree;
     protected Thread treeThread;
     protected HashMap<String, File> aliases;
-    final static String[] VALID_COMMANDS = {"ls", "cd", "cwd", "open", "quit", "grep", 
+    final static String[] VALID_COMMANDS = {"ls", "cd", "cwd", "open", "quit", "timer", "grep", 
                                             "tree", "find", "rm_alias", "alias", "manual",
                                             "quickTree"};
     
@@ -67,6 +68,9 @@ public class CommandTable {
         String returnStatement = "";
         startTime = System.nanoTime();
         switch (cmd){
+            case "timer":
+                willPrintTime = !willPrintTime;
+                break;
             case "quit":
                 treeThread.interrupt();
                 stillTakingInput = false;
@@ -106,10 +110,13 @@ public class CommandTable {
                 break;
             default: 
                 returnStatement = "Invalid command.";
+                break;
         }
         endTime = System.nanoTime();
-        System.out.println("Time taken: " + ((endTime - startTime) / 1000000000.0) + "");
-        
+        Double timeDiff = (endTime - startTime) / 1000000000.0;
+        if (willPrintTime){
+            returnStatement += "\nTime taken: " + timeDiff.floatValue() + " seconds.";
+        }
         return returnStatement;
     }
     
