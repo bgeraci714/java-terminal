@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap; 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 import java.util.regex.Matcher; 
 import java.util.regex.Pattern;
 
@@ -25,7 +26,8 @@ public class CommandTable {
     protected Thread treeThread;
     protected HashMap<String, File> aliases;
     final static String[] VALID_COMMANDS = {"ls", "cd", "cwd", "open", "quit", "grep", 
-                                            "tree", "find", "rm_alias", "alias", "manual"};
+                                            "tree", "find", "rm_alias", "alias", "manual",
+                                            "quickTree"};
     
     public CommandTable(){
         cwd = new File(System.getProperty("user.dir"));
@@ -53,6 +55,8 @@ public class CommandTable {
     }
     
     public String execute(String command){
+        long startTime = 0, endTime = 0;
+        
         
         String cmd = parseCmd(command);
         
@@ -61,6 +65,7 @@ public class CommandTable {
         
         
         String returnStatement = "";
+        startTime = System.nanoTime();
         switch (cmd){
             case "quit":
                 treeThread.interrupt();
@@ -77,6 +82,9 @@ public class CommandTable {
                 break;
             case "tree":
                 returnStatement = tree();
+                break;
+            case "quickTree":
+                returnStatement = TreeFiddy();
                 break;
             case "grep":
                 returnStatement = grep(command);
@@ -99,7 +107,76 @@ public class CommandTable {
             default: 
                 returnStatement = "Invalid command.";
         }
+        endTime = System.nanoTime();
+        System.out.println("Time taken: " + ((endTime - startTime) / 1000000000.0) + "");
+        
         return returnStatement;
+    }
+    
+    public String TreeFiddy(){
+        String result = "";
+        
+        int numFiles = 0;
+        int numDirs = 0;
+        
+        Stack<File> nodeStack = new Stack<>();
+        File currNode;
+        nodeStack.push(cwd);
+        
+        
+        while (!nodeStack.isEmpty()) {
+            
+            currNode = nodeStack.pop();
+            if (currNode != null){
+
+                result += "\n" + parentCountNonRec(currNode) + currNode.getName();
+            }
+            
+            if (currNode != null && currNode.listFiles() != null){
+                numDirs++;
+                for (File childFile : currNode.listFiles()){
+                    if (!currNode.getName().startsWith("."))
+                        nodeStack.push(childFile);
+                }
+            }
+            else 
+                numFiles++;
+            // otherwise the node is null, don't do anything with it
+        
+        }
+        String analysis = "\n\n" + numDirs;
+
+        if (numDirs > 1)
+            analysis += " directories, ";
+        else
+            analysis += " directory, ";
+
+        analysis += numFiles;
+
+        if (numFiles > 1)
+            analysis += " files";
+        else
+            analysis += " file";
+
+        
+        return result + analysis;
+    }
+    
+    private String parentCountNonRec(File child){
+        String result = "";
+        File currFile = child;
+        while (currFile.getParentFile() != null){
+            currFile = currFile.getParentFile();
+            result += "---";
+        }
+        return result;
+    }
+    
+    private String parentCount(File child){
+        if (child.getParentFile() == null)
+            return "";
+        else 
+            return "---" + parentCount(child.getParentFile());
     }
     
     protected synchronized String tree(){
