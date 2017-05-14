@@ -1,2 +1,1 @@
-apanna,/Users/bgspiral/Documents/invisiblemachine/apanna
-home,/Users/bgspiral/Documents/School/HCC/Spring\ 2017/CSI\ 256/hw/CommandLine
+apanna,/Users/bgspiral/Documents/invisiblemachine/apanna,docs,/Users/bgspiral/Documents,home,/Users/bgspiral/Documents/School/HCC/Spring\ 2017/CSI\ 256/hw/CommandLine,

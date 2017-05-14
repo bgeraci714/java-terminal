@@ -23,7 +23,9 @@ public class AliasIO {
             
             for (Map.Entry<String, File> currEntry : aliases.entrySet())
             {
-                writer.println(currEntry.getKey() + "," + currEntry.getValue().getAbsolutePath().replace(" ", "\\ "));
+                writer.print(currEntry.getKey() + "," 
+                           + currEntry.getValue().getAbsolutePath().replace(" ", "\\ ")
+                           + ","); // wasn't working on windows originally, so we're solely using a comma as a separator
             }
                 
             writer.close();

@@ -385,13 +385,7 @@ public class Patterns {
             + WORD_BOUNDARY
             + ")";
 
-    /**
-     * Regular expression pattern to match IRIs. If a string starts with http(s):// the expression
-     * tries to match the URL structure with a relaxed rule for TLDs. If the string does not start
-     * with http(s):// the TLDs are expected to be one of the known TLDs.
-     *
-     * @hide
-     */
+    
     public static final Pattern AUTOLINK_WEB_URL = Pattern.compile(
             "(" + WEB_URL_WITH_PROTOCOL + "|" + WEB_URL_WITHOUT_PROTOCOL + ")");
 
@@ -415,15 +409,8 @@ public class Patterns {
     private static final String EMAIL_ADDRESS_DOMAIN =
             "(?=.{1,255}(?:\\s|$|^))" + HOST_NAME;
 
-    /**
-     * Regular expression pattern to match email addresses. It excludes double quoted local parts
-     * and the special characters #&~!^`{}/=$*?| that are included in RFC5321.
-     * @hide
-     */
-    public static final Pattern AUTOLINK_EMAIL_ADDRESS = Pattern.compile("(" + WORD_BOUNDARY +
-            "(?:" + EMAIL_ADDRESS_LOCAL_PART + "@" + EMAIL_ADDRESS_DOMAIN + ")" +
-            WORD_BOUNDARY + ")"
-    );
+    
+    
 
     public static final Pattern EMAIL_ADDRESS
         = Pattern.compile(
