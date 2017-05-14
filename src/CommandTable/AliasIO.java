@@ -21,7 +21,8 @@ public class AliasIO {
             
             PrintWriter writer = new PrintWriter(ALIAS_FILE_PATH, "UTF-8");
             
-            for (Map.Entry<String, File> currEntry : aliases.entrySet()){
+            for (Map.Entry<String, File> currEntry : aliases.entrySet())
+            {
                 writer.println(currEntry.getKey() + "," + currEntry.getValue().getAbsolutePath().replace(" ", "\\ "));
             }
                 
@@ -53,7 +54,8 @@ public class AliasIO {
                 
                 aliasFilePath = new File (aliasFileString);
                 
-                if (aliasFilePath.exists()){
+                if (aliasFilePath.getAbsoluteFile().exists())
+                {
                     aliases.put(aliasKey, aliasFilePath);
                 }
             }

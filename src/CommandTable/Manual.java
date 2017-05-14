@@ -5,42 +5,47 @@ public class Manual {
     final static String spacer = "             ";
     final static String[] VALID_COMMANDS = {"ls", "cd", "open", "quit", "grep", 
                                             "tree", "find", "rm_alias", "alias", "manual", "cwd"};  
-    final static String[] COMMAND_DESCRIPTIONS = {"lists the files in the current directory", 
+    final static String[] COMMAND_DESCRIPTIONS = {
+                                                  "lists the files in the current directory\nUsage:       "
+                                                   + "ls", 
         
-                                                  "changes the directory. \nUsage: "
-                                                   + "\n" + spacer + "none -> goes to the root"
-                                                   + "\n" + spacer + "full valid file path -> moves to said file path"
-                                                   + "\n" + spacer + "file name/path below the current level -> moves to said file path"
-                                                   + "\n" + spacer + "alias -> moves straight to that alias if it's a valid directory", 
+                                                  "changes the directory. \nUsage:       "
+                                                   + "cd .. -> Moves you up one level. Most advised way to move through the directory structure." 
+                                                   + "\n" + spacer + "cd -> goes to the root directory, not advised to call tree here."
+                                                   + "\n" + spacer + "cd full/valid/file/path -> moves to said file path"
+                                                   + "\n" + spacer + "cd name_of_an_alias -> moves straight to that alias if it's a valid directory", 
                                                   
-                                                  "opens a file or website passed in as an argument. \nUsage: "
-                                                   + "\n" + spacer + "valid/file/path -> opens file with default program. or alias can be used as well, takes into account current working directory"
-                                                   + "\n" + spacer + "alias -> opens file with default program."
-                                                   + "\n" + spacer + "-w prefix.website.[com/org/io/etc...] -> opens website", 
+                                                  "opens a file or website passed in as an argument. takes into account current working directory\nUsage:       "
+                                                   + "open valid/file/path -> opens file with default program. "
+                                                   + "\n" + spacer + "open name_of_an_alias -> opens file with default program."
+                                                   + "\n" + spacer + "open -w prefix.website.[com/org/io/etc...] -> opens website", 
                                                   
-                                                  "exits the terminal and saves aliases", 
+                                                  "exits the terminal and saves aliases. \nUsage:\n"
+                                                   + spacer + "quit ", 
                                                   
-                                                  "searches within a textfile for a given search query. \nUsage: "
-                                                  + "\n" + spacer + "\"query\" full_file_path", 
+                                                  "searches within a textfile for a given search query. \nUsage:       "
+                                                   + "grep \"query\" full_file_path", 
                                                   
-                                                  "pretty prints out the below file structure in a tree-like format", 
+                                                  "pretty prints out the below file structure in a tree-like format. \n"
+                                                  + spacer + "advised not to use at the root dir or other folders with a lot (11,000+) folders/files. \n"
+                                                  + spacer + "do note, that the project is still working. It just takes time to complete!", 
                                                   
-                                                  "searches all directory/file names below the current working directory for a search query. \nUsage: "
-                                                  + "\n" + spacer + "search_query -> returns highlighted occurences of the search query", 
+                                                  "searches all directory/file names below the current working directory for a search query. \nUsage:       "
+                                                  + "find search_query -> returns highlighted occurences of the search query", 
                                                   
-                                                  "removes an alias passed as an argument. \nUsage: "
-                                                  + "\n" + spacer + "alias_to_remove -> removes said alias", 
+                                                  "removes an alias passed as an argument. \nUsage:       "
+                                                  + "rm_alias alias_to_remove -> removes said alias", 
                                                   
                                                   "creates a shortcut to a given file or directory path. Makes traversing the file structure much easier. \n"
-                                                  + spacer + "Loads and saves a user's aliases at the start and end of a terminal session. \nUsage:"
-                                                  + "\n" + spacer + "alias_name -> saves an alias for the current working directory"
-                                                  + "\n" + spacer + "alias_name full_file_path -> saves an alias for the specified file path", 
-                                                  
-                                                  
-                                                  
-                                                  "returns the manual",
+                                                  + spacer + "Loads and saves a user's aliases at the start and end of a terminal session. \nUsage:       "
+                                                  + "alias name_of_an_alias -> saves an alias for the current working directory"
+                                                  + "\n" + spacer + "alias name_of_an_alias full/file/path -> saves an alias for the specified file path", 
+                                                 
+                                                  "returns the manual\nUsage:       "
+                                                   + "manual ",
     
-                                                  "prints out the current working directory"};  
+                                                  "prints out the current working directory\nUsage:       "
+                                                   + "cwd"};  
     
     public static String general(){
         String spacer = "             ";
@@ -48,7 +53,8 @@ public class Manual {
                 "Valid Commands: \n";
         
         for (int i = 0; i < VALID_COMMANDS.length; i++){
-            result += "Command:     " + VALID_COMMANDS[i] + "\nDescription: " + COMMAND_DESCRIPTIONS[i] + "\n\n";
+            result += "Command:     " + Colors.highlight(VALID_COMMANDS[i], VALID_COMMANDS[i], "green") + "\nDescription: " + COMMAND_DESCRIPTIONS[i] + "\n\n";
+            //result = Colors.highlight(result, VALID_COMMANDS[i], "green");
         }
         
         return result;

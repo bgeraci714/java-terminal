@@ -439,7 +439,7 @@ public class CommandTable {
     private int[] wordIndexPull(String line, String searchTerm)
     {
             int start = line.indexOf(searchTerm);
-            //Index of the beginning of the
+            //Index of the beginning of the term
             boolean found = false;
             int secStart = start;
             int secEnd = start + searchTerm.length();
