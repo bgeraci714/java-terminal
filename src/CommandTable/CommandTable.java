@@ -3,12 +3,17 @@ package CommandTable;
 import FileTree.FileTree;
 
 import java.awt.Desktop;
+import java.io.BufferedReader;
 import java.io.File; 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException; 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap; 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher; 
 import java.util.regex.Pattern;
 
@@ -19,8 +24,8 @@ public class CommandTable {
     Runnable ftree;
     protected Thread treeThread;
     protected HashMap<String, File> aliases;
-    final static String[] VALID_COMMANDS = {"ls", "cd", "cwd", "open", "quit", 
-                                            "tree", "find", "rm_alias", "alias"};
+    final static String[] VALID_COMMANDS = {"ls", "cd", "cwd", "open", "quit", "grep", 
+                                            "tree", "find", "rm_alias", "alias", "manual"};
     
     public CommandTable(){
         cwd = new File(System.getProperty("user.dir"));
@@ -64,11 +69,17 @@ public class CommandTable {
             case "rm_alias":
                 returnStatement = rm_alias(command);
                 break;
+            case "manual":
+                returnStatement = manual(command);
+                break;
             case "alias":
                 returnStatement = alias(command);
                 break;
             case "tree":
                 returnStatement = tree();
+                break;
+            case "grep":
+                returnStatement = grep(command);
                 break;
             case "ls":
                 returnStatement = ls();
@@ -107,7 +118,7 @@ public class CommandTable {
     
     protected String open(String command){
         String returnStatement;
-        String fileName = command.replace("open", "").trim();
+        String fileName = command.replaceFirst("open", "").trim();
         
         // attempts to open website if -w flag is present
         if (fileName.startsWith("-w") || fileName.endsWith("-w")){
@@ -174,7 +185,7 @@ public class CommandTable {
     protected String cd(String command){
         boolean validFolder = true;
         String returnStatement;
-        String trimmed = command.replace("cd", "").trim();
+        String trimmed = command.replaceFirst("cd", "").trim();
         
         if (aliases.containsKey(trimmed) && aliases.get(trimmed).isDirectory()){
             cwd = aliases.get(trimmed);
@@ -245,7 +256,7 @@ public class CommandTable {
       
     private String find(String command) 
     {
-        String fileName = command.replace("find", "").trim();
+        String fileName = command.replaceFirst("find", "").trim();
         LinkedList<File> currentFiles = new LinkedList<>();
         currentFiles.addAll(recFileFind(cwd, fileName));
         
@@ -290,10 +301,14 @@ public class CommandTable {
         
         return recList;
     }
+    
+    private String manual(String command){
+        return Manual.general();
+    }
 
     private String alias(String command) {
         final String SPACER = "k4LjQH-zE#:T7^kE";
-        String[] commandArguments = command.replace("alias", "").trim().replace("\\ ", SPACER).split(" ");
+        String[] commandArguments = command.replaceFirst("alias", "").trim().replace("\\ ", SPACER).split(" ");
         
         if (commandArguments.length > 2 || 
             commandArguments.length == 0 || 
@@ -313,11 +328,12 @@ public class CommandTable {
             
             commandArguments[0] = commandArguments[0].replace(SPACER, " ");
             commandArguments[1] = commandArguments[1].replace(SPACER, " ");
-            
+            System.out.println(commandArguments[1]);
             for (int i = 0; i < commandArguments.length; i++){
                 
                 if ((new File(commandArguments[i])).exists()){
                     aliasFilePath = new File(commandArguments[i]);
+                    
                     indexOfFile = i;
                     i++;
                 }
@@ -338,7 +354,7 @@ public class CommandTable {
     
     private String rm_alias(String command) 
     {
-        String key = command.replace("rm_alias", "").trim();
+        String key = command.replaceFirst("rm_alias", "").trim();
         
         if (aliases.containsKey(key)) 
         {
@@ -347,6 +363,99 @@ public class CommandTable {
         }
         else
             return key + " was not a registered alias.";
+    }
+    
+    private String grep(String command) 
+    {
+        String blah = command.replaceFirst("grep", "").trim();
+        String searchTerm = "";
+        Pattern p = Pattern.compile("\"([^\"]*)\"");
+        Matcher m = p.matcher(blah);
+        String path = "";
+        List<String> fullWords = new ArrayList<>();
+        
+        int matchCount = 0;
+            while (m.find()) 
+            {
+                searchTerm = m.group();
+                path = blah.replace(searchTerm,"").trim();
+                searchTerm = searchTerm.substring(1, searchTerm.length() -1);
+                matchCount ++;
+            }
+            
+        File fileToUse = new File(path);            
+        if (matchCount != 1) 
+            return "Please one and only one set of search terms";
+
+        if (!fileToUse.exists()) 
+            return "Supplied file does not exist";
+        
+        if (!fileToUse.canRead() || !fileToUse.isFile())
+            return "Unable to read filetype";
+        try
+        {
+            FileInputStream fStream = new FileInputStream(fileToUse);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fStream));
+            String line;
+            while((line = br.readLine()) != null)
+            {
+                if (line.contains(searchTerm)) 
+                {
+                    String lineRemain = line;
+                    while (lineRemain.contains(searchTerm))
+                    {
+                        int[] section = wordIndexPull(lineRemain, searchTerm);
+                        fullWords.add(lineRemain.substring(section[0], section[1]));
+                        lineRemain = lineRemain.substring(section[1]);
+                    }
+                }
+            }
+                        
+        } catch (Exception ex){}
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("Found: \"").append(searchTerm).append("\" ").append(fullWords.size());
+        sb.append(" times in document:").append(System.lineSeparator());
+        sb.append(path).append(System.lineSeparator());
+        for (String word : fullWords) 
+        {
+            sb.append(word.trim());
+            sb.append(" ");
+        }
+        return sb.toString();
+    }
+    
+    private int[] wordIndexPull(String line, String searchTerm)
+    {
+        int start = line.indexOf(searchTerm);
+            boolean found = false;
+            int secStart = start;
+            int secEnd = start + searchTerm.length();
+            while (secStart > 0 && !found)
+            {
+                
+                
+                if (line.toCharArray()[secStart] == ' ')
+                {
+                    found = true;
+                }
+                else
+                    secStart --;
+            }
+            found = false;
+            while (secEnd < line.length() && !found)
+            {
+
+                if(line.toCharArray()[secEnd] == ' ')
+                {
+                    found = true;
+                }
+                else
+                    secEnd ++;
+            }
+            
+        int[] section = new int[] {secStart, secEnd};
+        return section;
     }
     
     

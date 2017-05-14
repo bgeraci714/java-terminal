@@ -32,10 +32,7 @@ public class AliasIO {
             
             return false;
         }
-        
-        
-        
-        
+   
     }
     
     public static HashMap<String,File> loadAliases(){
@@ -53,7 +50,6 @@ public class AliasIO {
                 
                 aliasKey = info.next();   
                 aliasFileString = info.next().replace("\\ ", " ");
-                
                 
                 aliasFilePath = new File (aliasFileString);
                 
