@@ -300,25 +300,26 @@ public class CommandTable {
     {
         LinkedList<File> recList = new LinkedList<>();
         
-        for (File workingFile : folder.listFiles()) 
-        {
-            if (workingFile.isDirectory()) 
+        try{
+            for (File workingFile : folder.listFiles()) 
             {
-                recList.addAll(recFileFind(workingFile, contains));
-                if (workingFile.getName().toLowerCase().contains(contains.toLowerCase())) 
+                if (workingFile.isDirectory()) 
                 {
-                    recList.add(workingFile);
+                    recList.addAll(recFileFind(workingFile, contains));
+                    if (workingFile.getName().toLowerCase().contains(contains.toLowerCase())) 
+                    {
+                        recList.add(workingFile);
+                    }
+                }
+                else
+                {
+                    if (workingFile.getName().toLowerCase().contains(contains.toLowerCase())) 
+                    {
+                        recList.add(workingFile);
+                    }
                 }
             }
-            else
-            {
-                if (workingFile.getName().toLowerCase().contains(contains.toLowerCase())) 
-                {
-                    recList.add(workingFile);
-                }
-            }
-        }
-        
+        } catch (NullPointerException ex){}
         return recList;
     }
     
