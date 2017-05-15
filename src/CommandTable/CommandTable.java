@@ -182,9 +182,13 @@ public class CommandTable {
         
         // otherwise tries to open file
         else 
-        {          
-            fileName = cwd.getAbsolutePath() + File.separator + fileName;
-            file = new File(fileName);
+        {   
+            if ((new File(fileName)).getAbsoluteFile().exists())
+                file = new File(fileName);
+            else {
+                fileName = cwd.getAbsolutePath() + File.separator + fileName;
+                file = new File(fileName);
+            }
         }
         
         
