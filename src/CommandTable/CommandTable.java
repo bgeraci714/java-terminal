@@ -202,7 +202,7 @@ public class CommandTable {
             }
         else 
             returnStatement = "Invalid file location. "
-                    + "Tip: you need either the full path from your current directory or the full file path.";
+                    + "\nTip: you need either the full path from your current directory, the full file path, or a valid file alias.";
         
         return returnStatement;
     }
@@ -354,7 +354,6 @@ public class CommandTable {
             
             commandArguments[0] = commandArguments[0].replace(SPACER, " ");
             commandArguments[1] = commandArguments[1].replace(SPACER, " ");
-            System.out.println(commandArguments[1]);
             for (int i = 0; i < commandArguments.length; i++){
                 
                 if ((new File(commandArguments[i])).exists()){
@@ -366,7 +365,8 @@ public class CommandTable {
             }
 
             if (aliasFilePath == null)
-                return "Two arguments were given but no valid file path supplied.";
+                return "Two arguments were given but no valid file path supplied. \n"
+                        + "Tip: You need escape each space \' \' in your file names with \'\\\' characters";
             
             if (indexOfFile == 0)
                 alias = commandArguments[1];
