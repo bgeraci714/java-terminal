@@ -201,7 +201,8 @@ public class CommandTable {
                 returnStatement = ex.toString();
             }
         else 
-            returnStatement = "Invalid file location.";
+            returnStatement = "Invalid file location. "
+                    + "Tip: you need either the full path from your current directory or the full file path.";
         
         return returnStatement;
     }
